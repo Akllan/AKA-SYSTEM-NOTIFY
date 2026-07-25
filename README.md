@@ -37,7 +37,7 @@ Built to be **lightweight, scalable and easy to integrate** into any server.
 
 
 <p align="center">
-  <img src="https://i.imgur.com/FzfYLFJ.gif" width="900">
+  <img src="https://i.imgur.com/FzfYLFJ.gif" width="300">
 </p>
 
 ---
