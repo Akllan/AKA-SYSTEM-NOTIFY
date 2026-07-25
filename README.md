@@ -35,11 +35,9 @@ Built to be **lightweight, scalable and easy to integrate** into any server.
 
 # 🎥 Preview
 
+
 <p align="center">
-  <video width="900" controls>
-    <source src="[https://i.imgur.com/i8dk8sI.mp4](https://i.imgur.com/i8dk8sI.mp4)" type="video/mp4">
-    Your browser does not support the video tag.
-  </video>
+  <img src="https://i.imgur.com/FzfYLFJ.gif" width="900">
 </p>
 
 ---
