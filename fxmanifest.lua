@@ -13,6 +13,5 @@ files {
     'html/index.html',
     'html/style.css',
     'html/config.js',
-    'html/script.js',
-    'html/assets/notif.mp3'
+    'html/script.js'
 }

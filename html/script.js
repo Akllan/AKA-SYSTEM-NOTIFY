@@ -1,84 +1,282 @@
 (function() {
     'use strict';
 
-    const D = (typeof Config !== 'undefined' && Config.Debug === true);
-    const notifContainer = document.getElementById('notification-container');
-    const root = document.documentElement;
+    const DEBUG = (typeof Config !== 'undefined' && Config.Debug === true);
 
-    const NOTIF_TYPES = {
-        success: { icon: 'M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z', color: '#2bff72', glow: '46, 255, 114' },
-        error:   { icon: 'M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z', color: '#ff2b2b', glow: '255, 43, 43' },
-        warning: { icon: 'M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z', color: '#f39c12', glow: '243, 156, 18' },
-        info:    { icon: 'M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z', color: '#3498db', glow: '52, 152, 219' },
-        main:    { icon: 'M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z', color: '#19a3ff', glow: '25, 163, 255' },
-        item:    { icon: 'M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H5.17L4 17.17V4h16v12z', color: '#b040e0', glow: '176, 64, 224' }
-    };
+    const container = document.getElementById('hud-container');
+    const healthFill = document.getElementById('health-fill');
+    const healthText = document.getElementById('health-text');
+    const healthBox = document.querySelector('.health-box');
+    const foodFill = document.getElementById('food-fill');
+    const foodText = document.getElementById('food-text');
+    const foodBox = document.querySelector('.food-box');
+    const thirstFill = document.getElementById('thirst-fill');
+    const thirstText = document.getElementById('thirst-text');
+    const thirstBox = document.querySelector('.thirst-box');
+    const armourFill = document.getElementById('armour-fill');
+    const armourText = document.getElementById('armour-text');
+    const armourRow = document.getElementById('armour-row');
+    const armourBox = document.getElementById('armour-box');
+    const micOverlay = document.getElementById('mic-overlay');
+    const vehicleSection = document.getElementById('vehicle-section');
+    const vSpeed = document.getElementById('v-speed');
+    const vUnit = document.getElementById('v-unit');
+    const vGear = document.getElementById('v-gear');
+    const vFuelText = document.getElementById('v-fuel-value');
+    const vFuelFill = document.getElementById('v-fuel-fill');
+    const vRpmFill = document.getElementById('v-rpm-fill');
+    const vSeatbelt = document.getElementById('v-seatbelt');
+    const vNitroRow = document.getElementById('v-row-nitro');
+    const vNitroFill = document.getElementById('v-nitro-fill');
+    const infoJob = document.getElementById('info-job-value');
+    const infoGrade = document.getElementById('info-grade-value');
+    const infoGradeBox = document.getElementById('info-grade');
+    const infoCash = document.getElementById('info-cash-value');
+    const infoBank = document.getElementById('info-bank-value');
+    const infoId = document.getElementById('info-id-value');
 
-    if (!notifContainer) {
-        if (D) console.error('[aka-notify] notification-container no encontrado');
+    if (!container || !healthFill || !healthText || !healthBox ||
+        !foodFill || !foodText || !foodBox ||
+        !thirstFill || !thirstText || !thirstBox) {
+        console.error('[aka-hud] Error crítico: Elementos del DOM del HUD no encontrados.');
         return;
     }
 
-    function escapeHTML(str) {
-        if (typeof str !== 'string') return '';
-        return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    const HUD_COLORS = {
+        purple: { hex: '#b040e0', rgb: '176, 64, 224' },
+        blue:   { hex: '#4fc3f7', rgb: '79, 195, 247' },
+        yellow: { hex: '#ffeb3b', rgb: '255, 235, 59' },
+        green:  { hex: '#4caf50', rgb: '76, 175, 80' },
+        red:    { hex: '#ef5350', rgb: '239, 83, 80' },
+        cyan:   { hex: '#00bcd4', rgb: '0, 188, 212' },
+        pink:   { hex: '#ec407a', rgb: '236, 64, 122' },
+        orange: { hex: '#ff9800', rgb: '255, 152, 0' },
+        white:  { hex: '#ffffff', rgb: '255, 255, 255' },
+    };
+
+    function applyHudColor(name) {
+        const color = HUD_COLORS[name] || HUD_COLORS.purple;
+        document.documentElement.style.setProperty('--hud-color', color.hex);
+        document.documentElement.style.setProperty('--hud-color-rgb', color.rgb);
+        log('applyHudColor: ' + name + ' -> ' + color.hex);
     }
 
-    const notifAudio = new Audio('assets/notif.mp3');
-    notifAudio.preload = 'auto';
-    notifAudio.volume = 0.5;
-
-    function playNotifSound() {
-        notifAudio.currentTime = 0;
-        notifAudio.play().catch(function() {});
+    function setInfo(data) {
+        if (infoJob) infoJob.textContent = data.job || 'Civilian';
+        if (infoGrade) infoGrade.textContent = data.grade || '';
+        if (infoGradeBox) {
+            if (data.grade && data.grade !== '') {
+                infoGradeBox.classList.remove('hidden');
+            } else {
+                infoGradeBox.classList.add('hidden');
+            }
+        }
+        if (infoCash) infoCash.textContent = data.cash || '$0';
+        if (infoBank) infoBank.textContent = data.bank || '$0';
+        if (infoId) infoId.textContent = data.id || '0';
+        log('setInfo: job=' + (data.job || '') + ' grade=' + (data.grade || '') + ' cash=' + (data.cash || '') + ' bank=' + (data.bank || '') + ' id=' + (data.id || ''));
     }
 
-    function stopNotifSound() {
-        notifAudio.pause();
-        notifAudio.currentTime = 0;
+    function log(msg) {
+        if (DEBUG) console.log('[aka-hud] ' + msg);
     }
 
-    var activeNotifCount = 0;
+    log('JS cargado con éxito e inicializado.');
 
-    function addNotification(label, itemLabel, type, customColor, customIcon, duration) {
-        const t = NOTIF_TYPES[type] || NOTIF_TYPES.info;
-        const color = customColor || t.color;
-        const glow = t.glow;
-        const iconPath = customIcon || t.icon;
+    function setHealth(health) {
+        const safeHealth = Math.max(0, Math.min(100, Number(health) || 0));
+        healthFill.style.width = safeHealth + '%';
+        healthText.textContent = Math.round(safeHealth);
 
-        const toast = document.createElement('div');
-        toast.className = 'notification-toast';
-        toast.style.setProperty('--notif-color', color);
-        toast.style.setProperty('--notif-color-rgb', glow);
+        const scale = 0.5 + (safeHealth / 100) * 0.5;
+        healthBox.style.setProperty('--box-scale', scale);
 
-        const iconHTML = '<div class="notif-icon"><svg class="notif-svg" viewBox="0 0 24 24" width="18" height="18"><path d="' + iconPath + '"/></svg></div>';
-        toast.innerHTML = iconHTML + '<div class="notif-text"><span class="notif-action">' + escapeHTML(label) + '</span><span class="notif-item">' + escapeHTML(itemLabel) + '</span></div>';
+        log('setHealth ejecutado: ' + safeHealth + '%');
+    }
 
-        if (type === 'error') toast.classList.add('notif-error');
+    var lastFoodScale = -1;
+    function setFood(food) {
+        const safeFood = Math.max(0, Math.min(100, Number(food) || 0));
+        foodFill.style.width = safeFood + '%';
+        foodText.textContent = Math.round(safeFood);
 
-        notifContainer.prepend(toast);
-        void toast.offsetHeight;
-        toast.classList.add('enter');
+        const scale = 0.5 + (safeFood / 100) * 0.5;
+        if (scale !== lastFoodScale) {
+            foodBox.style.setProperty('--box-scale', scale);
+            lastFoodScale = scale;
+        }
 
-        activeNotifCount++;
-        playNotifSound();
+        if (safeFood <= 0) {
+            foodBox.classList.add('critical');
+        } else {
+            foodBox.classList.remove('critical');
+        }
 
-        setTimeout(function() {
-            toast.classList.remove('enter');
-            toast.classList.add('exit');
-            setTimeout(function() {
-                if (toast.parentNode) toast.parentNode.removeChild(toast);
-                activeNotifCount--;
-                if (activeNotifCount <= 0) stopNotifSound();
-            }, 400);
-        }, duration || 3000);
+        log('setFood ejecutado: ' + safeFood + '%');
+    }
+
+    var lastThirstScale = -1;
+    function setThirst(thirst) {
+        const safeThirst = Math.max(0, Math.min(100, Number(thirst) || 0));
+        thirstFill.style.width = safeThirst + '%';
+        thirstText.textContent = Math.round(safeThirst);
+
+        const scale = 0.5 + (safeThirst / 100) * 0.5;
+        if (scale !== lastThirstScale) {
+            thirstBox.style.setProperty('--box-scale', scale);
+            lastThirstScale = scale;
+        }
+
+        if (safeThirst <= 0) {
+            thirstBox.classList.add('critical');
+        } else {
+            thirstBox.classList.remove('critical');
+        }
+
+        log('setThirst ejecutado: ' + safeThirst + '%');
+    }
+
+    function setArmour(armour) {
+        const safeArmour = Math.max(0, Math.min(100, Number(armour) || 0));
+
+        if (armourFill && armourText) {
+            armourFill.style.width = safeArmour + '%';
+            armourText.textContent = Math.round(safeArmour);
+        }
+
+        if (armourRow) {
+            if (safeArmour > 0) {
+                armourRow.classList.remove('hidden');
+            } else {
+                armourRow.classList.add('hidden');
+            }
+        }
+
+        log('setArmour ejecutado: ' + safeArmour + '%');
+    }
+
+    function setMic(state) {
+        if (!micOverlay) return;
+
+        if (state === 'talking') {
+            micOverlay.classList.add('visible');
+        } else {
+            micOverlay.classList.remove('visible');
+        }
+
+        log('setMic ejecutado: ' + state);
+    }
+
+    function setVehicleData(data) {
+        if (!vehicleSection) return;
+
+        if (data.show) {
+            vehicleSection.classList.add('visible');
+            if (vSpeed) vSpeed.textContent = data.speed;
+            if (vUnit) vUnit.textContent = data.unit || 'KM/H';
+
+            if (vGear) {
+                var gearVal = parseInt(data.gear, 10);
+                vGear.textContent = (!data.speed || data.speed === 0 || gearVal === 0) ? 'N' : gearVal;
+            }
+
+            var fuel = Math.max(0, Math.min(100, Number(data.fuel) || 0));
+            if (vFuelFill) vFuelFill.style.width = fuel + '%';
+            if (vFuelText) vFuelText.textContent = fuel + '%';
+
+            var rpmWidth = Math.max(0, Math.min(100, (data.rpm || 0) * 100));
+            if (vRpmFill) vRpmFill.style.width = rpmWidth + '%';
+
+            if (vSeatbelt) {
+                if (data.seatbelt) {
+                    vSeatbelt.classList.add('on');
+                } else {
+                    vSeatbelt.classList.remove('on');
+                }
+            }
+
+            if (vNitroRow) {
+                if (data.hasNitro) {
+                    vNitroRow.classList.add('visible');
+                } else {
+                    vNitroRow.classList.remove('visible');
+                }
+            }
+
+            if (vNitroFill && data.nitro !== undefined) {
+                vNitroFill.style.width = Math.max(0, Math.min(100, (data.nitro || 0) * 100)) + '%';
+            }
+        } else {
+            vehicleSection.classList.remove('visible');
+            if (vSeatbelt) vSeatbelt.classList.remove('on');
+            if (vNitroRow) vNitroRow.classList.remove('visible');
+        }
+
+        log('setVehicleData: show=' + (data.show ? 'true' : 'false') + ' speed=' + data.speed);
     }
 
     window.addEventListener('message', function(event) {
         const msg = event.data;
-        if (!msg || msg.action !== 'notification') return;
-        addNotification(msg.label, msg.itemLabel, msg.type, msg.color, msg.icon, msg.duration);
+        if (!msg || !msg.action) return;
+
+        log('NUI Message recibido: ' + msg.action);
+
+        switch (msg.action) {
+            case 'death':
+                setHealth(0);
+                setArmour(msg.armour || 0);
+                container.classList.add('dead');
+                break;
+            case 'revive':
+                container.classList.remove('dead');
+                setHealth(msg.health);
+                setArmour(msg.armour || 0);
+                break;
+            case 'setHealth':
+                container.classList.remove('dead');
+                setHealth(msg.health);
+                if (msg.armour !== undefined) setArmour(msg.armour);
+                break;
+            case 'setArmour':
+                setArmour(msg.armour);
+                break;
+            case 'setMic':
+                setMic(msg.state);
+                break;
+            case 'setStatus':
+                setFood(msg.food);
+                setThirst(msg.thirst);
+                break;
+            case 'setVehicle':
+                if (msg.inVehicle) {
+                    container.classList.add('in-vehicle');
+                } else {
+                    container.classList.remove('in-vehicle');
+                }
+                break;
+            case 'setVehicleData':
+                setVehicleData(msg);
+                break;
+            case 'setInfo':
+                setInfo(msg);
+                break;
+            case 'show':
+                container.classList.add('visible');
+                applyHudColor(msg.hudColor || Config.HudColor || 'purple');
+                break;
+            case 'hide':
+                container.classList.remove('visible');
+                container.classList.remove('dead');
+                container.classList.remove('in-vehicle');
+                setHealth(100);
+                setArmour(0);
+                setFood(100);
+                setThirst(100);
+                setMic('muted');
+                setVehicleData({ show: false });
+                break;
+        }
     });
 
-    if (D) console.log('[aka-notify] Notification system initialized');
+    log('EventListener de mensajes registrado correctamente.');
 })();
