@@ -1,0 +1,107 @@
+@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    overflow: hidden;
+    background: transparent;
+    font-family: 'Quicksand', 'Segoe UI', sans-serif;
+}
+
+/* === NOTIFICACIONES TOAST === */
+
+#notification-container {
+    position: fixed;
+    top: 50%;
+    right: 30px;
+    transform: translateY(-50%);
+    z-index: 2000;
+    display: flex;
+    flex-direction: column-reverse;
+    gap: 6px;
+    pointer-events: none;
+    align-items: flex-end;
+}
+
+.notification-toast {
+    --notif-color: #ffffff;
+    --notif-color-rgb: 255, 255, 255;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(0, 0, 0, 0.92);
+    border: 1px solid rgba(var(--notif-color-rgb), 0.25);
+    border-radius: 10px;
+    padding: 12px 16px;
+    box-shadow: 0 0 12px rgba(var(--notif-color-rgb), 0.2), 0 0 30px rgba(var(--notif-color-rgb), 0.08), 0 4px 20px rgba(0, 0, 0, 0.6);
+    font-family: 'Quicksand', 'Segoe UI', sans-serif;
+    min-width: 220px;
+    max-width: 320px;
+    transform: translateX(100vw);
+    opacity: 0;
+    transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.4s ease;
+    pointer-events: auto;
+}
+
+.notification-toast.enter {
+    transform: translateX(0);
+    opacity: 1;
+}
+
+.notification-toast.exit {
+    transform: translateX(100vw);
+    opacity: 0;
+}
+
+.notification-toast.notif-error .notif-svg {
+    animation: notifErrorPulse 0.8s ease-in-out infinite;
+}
+
+@keyframes notifErrorPulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.25); }
+    100% { transform: scale(1); }
+}
+
+.notif-icon {
+    flex-shrink: 0;
+    width: 34px;
+    height: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.notif-svg {
+    fill: var(--notif-color);
+    filter: drop-shadow(0 0 6px rgba(var(--notif-color-rgb), 0.6));
+}
+
+.notif-text {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    min-width: 0;
+}
+
+.notif-action {
+    font-size: 12px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.6);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.notif-item {
+    font-size: 15px;
+    font-weight: 700;
+    color: #fff;
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
