@@ -36,7 +36,10 @@ Built to be **lightweight, scalable and easy to integrate** into any server.
 # 🎥 Preview
 
 <p align="center">
-  Showcase coming soon
+  <video width="900" controls>
+    <source src="https://i.imgur.com/i8dk8sI.mp4" type="video/mp4">
+    Your browser does not support the video tag.
+  </video>
 </p>
 
 ---
