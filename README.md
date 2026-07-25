@@ -1,66 +1,254 @@
-# AKA Notify
+# 🔔 AKA Notify
 
-A modern notification system designed for FiveM servers, built with a premium glassmorphism interface and the visual identity of the AKA suite.
+<p align="center">
+  <img src="https://i.imgur.com/K77vhUk.png" width="900">
+</p>
 
-AKA Notify replaces the default GTA/FiveM notifications with a clean, immersive and highly customizable toast system featuring smooth animations, dynamic colors, custom icons and sound feedback.
+<p align="center">
+  <b>Modern • Smooth • Customizable</b>
+</p>
 
-Designed to be lightweight, scalable and easy to integrate into any server.
+<p align="center">
+  A premium notification system for FiveM servers with a modern glassmorphism interface.
+</p>
 
-## Features
+<p align="center">
 
-✨ Modern Glassmorphism UI  
-⚡ Optimized performance with zero dependencies  
-🎨 Fully customizable colors, icons and styles  
-🔔 Multiple notification types  
-🔊 Integrated notification sounds  
-🔗 ESX compatibility  
-📦 Simple installation  
-🛠 Developer-friendly API  
+![FiveM](https://img.shields.io/badge/FiveM-Ready-red?style=for-the-badge&logo=fivem)
+![ESX](https://img.shields.io/badge/ESX-Compatible-blue?style=for-the-badge)
+![Dependencies](https://img.shields.io/badge/Dependencies-0-green?style=for-the-badge)
+![AKA Suite](https://img.shields.io/badge/AKA_Suite-Premium-black?style=for-the-badge)
 
-## Notification Types
+</p>
 
-- Success
-- Error
-- Warning
-- Information
-- System
-- Item
+---
 
-Each notification includes its own color theme, icon and visual effects.
+# 📖 Overview
 
-## Customization
+**AKA Notify** is a modern notification system created for FiveM servers, designed with a premium glassmorphism interface and the visual identity of the **AKA Suite**.
 
-Every notification can be customized with:
+Replace the default GTA/FiveM notifications with a clean, immersive and customizable toast system featuring smooth animations, dynamic colors, custom icons and sound feedback.
+
+Built to be **lightweight, scalable and easy to integrate** into any server.
+
+---
+
+# 🎥 Preview
+
+<p align="center">
+  Showcase coming soon
+</p>
+
+---
+
+# ✨ Features
+
+## 🎨 Premium Interface
+
+- Modern glassmorphism design
+- Smooth slide animations
+- Dynamic glow effects
+- Clean right-side notification layout
+- Immersive UI experience
+- Fully responsive design
+
+---
+
+# 🔔 Notification Types
+
+AKA Notify includes multiple notification styles:
+
+| Type | Description |
+|------|-------------|
+| ✅ Success | Successful actions |
+| ❌ Error | Errors and failures |
+| ⚠️ Warning | Important warnings |
+| 🔵 Info | General information |
+| 🔔 Main | System notifications |
+| 📦 Item | Item related messages |
+
+---
+
+# 🚀 Main Features
+
+## ⚡ Optimized Performance
+
+Designed with performance as a priority:
+
+- Zero dependencies
+- Lightweight NUI system
+- Minimal resource usage
+- Clean architecture
+- Server friendly
+- Scalable system
+
+---
+
+## 🎨 Full Customization
+
+Every notification can be customized:
 
 - Custom HEX colors
 - Custom SVG icons
 - Custom titles
 - Custom duration
-- Individual sounds
+- Custom sounds
+- Custom notification styles
 
-Built to adapt to your server's identity.
+Example:
 
-## Compatibility
+```lua
+exports['aka-notify']:ShowNotification(
+    'Custom message',
+    'info',
+    {
+        title = 'Information',
+        color = '#00ffff',
+        duration = 5000
+    }
+)
+```
 
-✔ ESX Legacy  
-✔ Standalone  
-✔ FiveM Native
+---
 
-No external dependencies required.
+# 🔗 ESX Integration
 
-## Performance
+AKA Notify includes automatic ESX notification support.
 
-AKA Notify was created with optimization in mind:
+Compatible with:
 
-- Lightweight NUI system
-- Minimal resource usage
-- No unnecessary frameworks
-- Clean and scalable code
+```lua
+ESX.ShowNotification()
 
-## API Example
+ESX.ShowAdvancedNotification()
+```
+
+Existing ESX scripts can continue working without major modifications.
+
+---
+
+# 📦 Installation
+
+### 1. Download the resource
+
+Place it inside your resources folder:
+
+```
+resources/
+└── aka-notify
+```
+
+### 2. Add it to your server.cfg
+
+```cfg
+ensure aka-notify
+```
+
+### 3. Restart your server
+
+Your server is now using AKA Notify.
+
+---
+
+# 🛠 API
+
+## Client Side
+
+### Simple notification
 
 ```lua
 exports['aka-notify']:ShowNotification(
     'Operation successful',
     'success'
 )
+```
+
+---
+
+### Advanced notification
+
+```lua
+exports['aka-notify']:ShowNotification(
+    'Something went wrong',
+    'error',
+    {
+        title = 'Error',
+        color = '#ff0000',
+        duration = 6000
+    }
+)
+```
+
+---
+
+## Server Side
+
+Send a notification to players:
+
+```lua
+TriggerClientEvent(
+    'aka-notify:notification',
+    -1,
+    'Server restart in 5 minutes',
+    'warning'
+)
+```
+
+---
+
+# 📂 Resource Structure
+
+```
+aka-notify/
+
+├── fxmanifest.lua
+├── config.lua
+├── client.lua
+
+└── html/
+    ├── index.html
+    ├── style.css
+    ├── config.js
+    ├── script.js
+
+    └── assets/
+        └── notif.mp3
+```
+
+---
+
+# 🎯 Performance
+
+AKA Notify was built with optimization in mind.
+
+```
+✔ Zero dependencies
+✔ Lightweight UI
+✔ Smooth animations
+✔ Clean codebase
+✔ Scalable architecture
+```
+
+---
+
+# 🖤 AKA Suite
+
+AKA Notify is part of the **AKA Suite**, a collection of premium FiveM resources focused on:
+
+- Modern interfaces
+- Smooth animations
+- Performance
+- Customization
+- Immersive gameplay
+
+---
+
+# 📜 License
+
+MIT License
+
+---
+
+<p align="center">
+  Made with ❤️ by <b>AKA Studio</b>
+</p>
